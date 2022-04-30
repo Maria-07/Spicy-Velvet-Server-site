@@ -37,12 +37,19 @@ async function run() {
       res.send(product);
     });
 
+    //update a single value
     app.put("/products/:id", async (req, res) => {
       const id = req.params.id;
       const { quantity } = req.body;
       const query = { _id: ObjectId(id) };
       const data = { $set: { Quantity: quantity } };
       const result = await productCollection.updateOne(query, data);
+      res.send(result);
+    });
+    // Post a new item in DB
+    app.post("/products", async (req, res) => {
+      const newProduct = req.body;
+      const result = await productCollection.insertOne(newProduct);
       res.send(result);
     });
   } finally {
