@@ -22,6 +22,7 @@ async function run() {
     await client.connect();
     const productCollection = client.db("Spicy-Velvet").collection("products");
 
+    //get product from server
     app.get("/products", async (req, res) => {
       const query = {};
       const cursor = productCollection.find(query);
@@ -30,6 +31,7 @@ async function run() {
       res.send(products);
     });
 
+    //get single products
     app.get("/products/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
@@ -46,10 +48,19 @@ async function run() {
       const result = await productCollection.updateOne(query, data);
       res.send(result);
     });
+
     // Post a new item in DB
     app.post("/products", async (req, res) => {
       const newProduct = req.body;
       const result = await productCollection.insertOne(newProduct);
+      res.send(result);
+    });
+
+    //delete a single a product
+    app.delete("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await productCollection.deleteOne(query);
       res.send(result);
     });
   } finally {
