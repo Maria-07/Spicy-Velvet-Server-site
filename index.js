@@ -58,11 +58,19 @@ async function run() {
       const result = await productCollection.insertOne(newProduct);
       res.send(result);
     });
-    // Post a new item in DB
+    // Post a my item in DB
     app.post("/myItem", async (req, res) => {
       const newProduct = req.body;
       const result = await newProductCollection.insertOne(newProduct);
       res.send(result);
+    });
+
+    //get my items from server
+    app.get("/myItem", async (req, res) => {
+      const query = {};
+      const cursor = productCollection.find(query);
+      const myItems = await cursor.toArray();
+      res.send(myItems);
     });
 
     //delete a single a product
