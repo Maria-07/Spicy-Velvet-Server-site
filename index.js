@@ -21,6 +21,9 @@ async function run() {
   try {
     await client.connect();
     const productCollection = client.db("Spicy-Velvet").collection("products");
+    const newProductCollection = client
+      .db("Spicy-Velvet")
+      .collection("newProducts");
 
     //get product from server
     app.get("/products", async (req, res) => {
@@ -55,10 +58,10 @@ async function run() {
       const result = await productCollection.insertOne(newProduct);
       res.send(result);
     });
-
-    app.post("/myitems", async (req, res) => {
+    // Post a new item in DB
+    app.post("/myItem", async (req, res) => {
       const newProduct = req.body;
-      const result = await productCollection.insertOne(newProduct);
+      const result = await newProductCollection.insertOne(newProduct);
       res.send(result);
     });
 
