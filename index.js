@@ -74,17 +74,18 @@ async function run() {
       const cursor = newProductCollection.find(query);
       const myItems = await cursor.toArray();
       res.send(myItems);
+      // res.send({ Dekhaw: "Tui ghorar Dim" });
     });
 
-    // //delete My-item product
-    // app.delete("/myItems", async (req, res) => {
-    //   const id = req.query;
-    //   console.log(id);
-    //   // const query = {};
-    //   const query = { _id: ObjectId(id) };
-    //   const result = await newProductCollection.deleteOne(query);
-    //   res.send(result);
-    // });
+    //delete My-item product
+    app.delete("/myItem/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      // const query = {};
+      const query = { _id: ObjectId(id) };
+      const result = await newProductCollection.deleteOne(query);
+      res.send(result);
+    });
 
     //delete a single  product
     app.delete("/products/:id", async (req, res) => {
