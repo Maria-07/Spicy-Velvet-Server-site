@@ -66,12 +66,12 @@ async function run() {
     });
 
     //get my items from server
-    app.get("/myItem", async (req, res) => {
+    app.get("/products", async (req, res) => {
       const email = req.query.email;
       console.log(email);
       const query = { email: email };
       // const query = {};
-      const cursor = newProductCollection.find(query);
+      const cursor = productCollection.find(query);
       const myItems = await cursor.toArray();
       res.send(myItems);
     });
