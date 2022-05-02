@@ -59,19 +59,19 @@ async function run() {
       res.send(result);
     });
     // Post a my item in DB
-    app.post("/products", async (req, res) => {
+    app.post("/myItem", async (req, res) => {
       const newProduct = req.body;
-      const result = await productCollection.insertOne(newProduct);
+      const result = await newProductCollection.insertOne(newProduct);
       res.send(result);
     });
 
     //get my items from server
-    app.get("/products", async (req, res) => {
+    app.get("/myItem", async (req, res) => {
       const email = req.query.email;
       console.log(email);
       const query = { email: email };
       // const query = {};
-      const cursor = productCollection.find(query);
+      const cursor = newProductCollection.find(query);
       const myItems = await cursor.toArray();
       res.send(myItems);
     });
