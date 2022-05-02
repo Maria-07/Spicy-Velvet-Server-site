@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cog8e.mongodb.net/Spicy-Velvet?retryWrites=true&w=majority`;
-console.log(uri);
+// console.log(uri);
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -59,9 +59,9 @@ async function run() {
       res.send(result);
     });
     // Post a my item in DB
-    app.post("/myItem", async (req, res) => {
+    app.post("/products", async (req, res) => {
       const newProduct = req.body;
-      const result = await newProductCollection.insertOne(newProduct);
+      const result = await productCollection.insertOne(newProduct);
       res.send(result);
     });
 
@@ -77,8 +77,10 @@ async function run() {
     });
 
     // //delete My-item product
-    // app.delete("/products/:id", async (req, res) => {
-    //   const id = req.params.id;
+    // app.delete("/myItems", async (req, res) => {
+    //   const id = req.query;
+    //   console.log(id);
+    //   // const query = {};
     //   const query = { _id: ObjectId(id) };
     //   const result = await newProductCollection.deleteOne(query);
     //   res.send(result);
