@@ -17,23 +17,23 @@ function verifyToken(req, res, next) {
   if (!authHeader) {
     return res.status(401).send({ message: "unauthorized access" });
   }
-  const token = authHeader.split(" ")[1];
-  console.log(token);
-  jwt.verify(
-    token,
-    process.env.ACCESS_TOKEN_SECRET,
-    (err, decoded) => {
-      if (err) {
-        return res.status(403).send({ message: "forbidden access" });
-      }
-      console.log("decoded : ", decoded);
-    }
-    //   if (err) {
-    //     return res.status(403).send({ message: "forbidden access" });
-    //   }
-    //   console.log("decoded : ", decoded);
-    //   //     req.decoded = decoded;
-  );
+  // const token = authHeader.split(" ")[1];
+  // console.log(token);
+  // jwt.verify(
+  //   token,
+  //   process.env.ACCESS_TOKEN_SECRET,
+  //   (err, decoded) => {
+  //     if (err) {
+  //       return res.status(403).send({ message: "forbidden access" });
+  //     }
+  //     console.log("decoded : ", decoded);
+  //   }
+  //   if (err) {
+  //     return res.status(403).send({ message: "forbidden access" });
+  //   }
+  //   console.log("decoded : ", decoded);
+  //   //     req.decoded = decoded;
+  // );
   next();
 }
 
