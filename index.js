@@ -4,10 +4,28 @@ const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
+var jwt = require("jsonwebtoken");
 
 //middleware
 app.use(cors());
 app.use(express.json());
+
+// verify Token
+// function verifyToken(req, res, next) {
+//   const headAuth = req.headers.authorization;
+//   if (!headAuth) {
+//     return res.status(401).send({ message: "unauthorized access" });
+//   }
+//   const token = headAuth.split(" ")[1];
+//   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+//     if (err) {
+//       return res.status(403).send({ message: "forbidden access" });
+//     }
+//     console.log("decoded : ", decoded);
+//     req.decoded = decoded;
+//   });
+//   next();
+// }
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cog8e.mongodb.net/Spicy-Velvet?retryWrites=true&w=majority`;
 // console.log(uri);
@@ -24,6 +42,22 @@ async function run() {
     const newProductCollection = client
       .db("Spicy-Velvet")
       .collection("newProducts");
+
+    //Auth
+    app.post("/login", async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const accessToken = await jwt.sign(
+        user,
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+          expiresIn: "1d",
+        }
+      );
+
+      // console.log(accessToken);
+      res.send(accessToken);
+    });
 
     //get product from server
     app.get("/products", async (req, res) => {
@@ -66,16 +100,25 @@ async function run() {
     });
 
     //get my items from server
-    app.get("/myItem", async (req, res) => {
-      const email = req.query.email;
-      console.log(email);
-      const query = { email: email };
-      // const query = {};
-      const cursor = newProductCollection.find(query);
-      const myItems = await cursor.toArray();
-      res.send(myItems);
-      // res.send({ Dekhaw: "Tui ghorar Dim" });
-    });
+    app.get(
+      "/myItem",
+      async (req, res) => {
+        // const decodedEmail = req.decoded.email;
+        // console.log(decodeEmail);
+        const email = req.query.email;
+        // if (email === decodedEmail) {
+        console.log(email);
+        const query = { email: email };
+        // const query = {};
+        const cursor = newProductCollection.find(query);
+        const myItems = await cursor.toArray();
+        res.send(myItems);
+        // res.send({ Dekhaw: "Tui ghorar Dim" });
+      }
+      // else {
+      //   res.status(403).send({ message: "forbidden access" });
+      // }
+    );
 
     //delete My-item product
     app.delete("/myItem/:id", async (req, res) => {
