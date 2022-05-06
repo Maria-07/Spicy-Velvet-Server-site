@@ -11,21 +11,31 @@ app.use(cors());
 app.use(express.json());
 
 // verify Token
-// function verifyToken(req, res, next) {
-//   const headAuth = req.headers.authorization;
-//   if (!headAuth) {
-//     return res.status(401).send({ message: "unauthorized access" });
-//   }
-//   const token = headAuth.split(" ")[1];
-//   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-//     if (err) {
-//       return res.status(403).send({ message: "forbidden access" });
-//     }
-//     console.log("decoded : ", decoded);
-//     req.decoded = decoded;
-//   });
-//   next();
-// }
+function verifyToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  console.log("inside ", authHeader);
+  if (!authHeader) {
+    return res.status(401).send({ message: "unauthorized access" });
+  }
+  const token = authHeader.split(" ")[1];
+  console.log(token);
+  jwt.verify(
+    token,
+    process.env.ACCESS_TOKEN_SECRET,
+    (err, decoded) => {
+      if (err) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+      console.log("decoded : ", decoded);
+    }
+    //   if (err) {
+    //     return res.status(403).send({ message: "forbidden access" });
+    //   }
+    //   console.log("decoded : ", decoded);
+    //   //     req.decoded = decoded;
+  );
+  next();
+}
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cog8e.mongodb.net/Spicy-Velvet?retryWrites=true&w=majority`;
 // console.log(uri);
@@ -102,12 +112,13 @@ async function run() {
     //get my items from server
     app.get(
       "/myItem",
+      verifyToken,
       async (req, res) => {
         // const decodedEmail = req.decoded.email;
         // console.log(decodeEmail);
         const email = req.query.email;
         // if (email === decodedEmail) {
-        console.log(email);
+        // console.log(email);
         const query = { email: email };
         // const query = {};
         const cursor = newProductCollection.find(query);
@@ -123,7 +134,7 @@ async function run() {
     //delete My-item product
     app.delete("/myItem/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      // console.log(id);
       // const query = {};
       const query = { _id: ObjectId(id) };
       const result = await newProductCollection.deleteOne(query);
