@@ -17,23 +17,15 @@ function verifyToken(req, res, next) {
   if (!authHeader) {
     return res.status(401).send({ message: "unauthorized access" });
   }
-  // const token = authHeader.split(" ")[1];
-  // console.log(token);
-  // jwt.verify(
-  //   token,
-  //   process.env.ACCESS_TOKEN_SECRET,
-  //   (err, decoded) => {
-  //     if (err) {
-  //       return res.status(403).send({ message: "forbidden access" });
-  //     }
-  //     console.log("decoded : ", decoded);
-  //   }
-  //   if (err) {
-  //     return res.status(403).send({ message: "forbidden access" });
-  //   }
-  //   console.log("decoded : ", decoded);
-  //   //     req.decoded = decoded;
-  // );
+  const token = authHeader.split(" ")[1];
+  console.log(token);
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).send({ message: "forbidden access" });
+    }
+    console.log("decoded : ", decoded);
+    req.decoded = decoded;
+  });
   next();
 }
 
@@ -65,7 +57,7 @@ async function run() {
         }
       );
 
-      // console.log(accessToken);
+      console.log(accessToken);
       res.send(accessToken);
     });
 
@@ -110,32 +102,26 @@ async function run() {
     });
 
     //get my items from server
-    app.get(
-      "/myItem",
-      verifyToken,
-      async (req, res) => {
-        // const decodedEmail = req.decoded.email;
-        // console.log(decodeEmail);
-        const email = req.query.email;
-        // if (email === decodedEmail) {
-        // console.log(email);
+    app.get("/myItem", verifyToken, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      console.log(decodedEmail);
+      const email = req.query.email;
+      console.log(email);
+      if (email === decodedEmail) {
         const query = { email: email };
-        // const query = {};
         const cursor = newProductCollection.find(query);
         const myItems = await cursor.toArray();
         res.send(myItems);
         // res.send({ Dekhaw: "Tui ghorar Dim" });
+      } else {
+        res.status(403).send({ message: "forbidden access" });
       }
-      // else {
-      //   res.status(403).send({ message: "forbidden access" });
-      // }
-    );
+    });
 
     //delete My-item product
     app.delete("/myItem/:id", async (req, res) => {
       const id = req.params.id;
       // console.log(id);
-      // const query = {};
       const query = { _id: ObjectId(id) };
       const result = await newProductCollection.deleteOne(query);
       res.send(result);
