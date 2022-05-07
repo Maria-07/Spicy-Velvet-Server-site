@@ -61,11 +61,31 @@ async function run() {
       res.send(accessToken);
     });
 
+    //product count
+    app.get("/productCount", async (req, res) => {
+      // const query = {};
+      // const cursor = productCollection.find(query);
+      const count = await productCollection.estimatedDocumentCount();
+      res.send({ count });
+    });
+
     //get product from server
     app.get("/products", async (req, res) => {
+      console.log("query", req.query);
+      const page = parseInt(req.query.page);
+      const count = parseInt(req.query.size);
       const query = {};
       const cursor = productCollection.find(query);
-      const products = await cursor.toArray();
+      let products;
+      if (page || count) {
+        products = await cursor
+          .skip(page * count)
+          .limit(count)
+          .toArray();
+      } else {
+        products = await cursor.toArray();
+      }
+
       // console.log(products);
       res.send(products);
     });
